@@ -3,7 +3,7 @@
 ## The question
 In the three weeks before LeBron signed with the 76ers, how did the crowd's belief in this move compare to the market's priced probability?
 
-Philly's odds at landing the King was a longshot, never eclipsing 18% on Kalshi and sitting at around 10 cents a share at resolution. 
+Philly's odds at landing the King was a longshot, never eclipsing 23% on Kalshi and sitting at around 10 cents a share at resolution. 
 
 How wide was the gap between what the people were saying and what the money was saying?
 
