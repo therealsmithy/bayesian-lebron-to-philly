@@ -49,7 +49,6 @@ def fetch_page(subreddit: str, after_ts: int, retries: int = 12) -> list[dict]:
     if resp is not None:
         resp.raise_for_status()
     raise requests.exceptions.RequestException(f"Failed to fetch r/{subreddit} after {retries} attempts")
-    return []
 
 
 def fetch_subreddit(subreddit: str) -> list[dict]:
