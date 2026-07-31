@@ -7,16 +7,20 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parent.parent
 IN_PATH = ROOT / "data" / "raw" / "reddit_comments.json"
+POSTS_PATH = ROOT / "data" / "processed" / "reddit_posts.csv"
 OUT_PATH = ROOT / "data" / "processed" / "reddit_comments.csv"
 
 COLUMNS = [
     "id", "subreddit", "created_utc", "body", "score",
-    "link_id", "link_title", "parent_id", "permalink",
+    "post_id", "post_title", "parent_id", "parent_type", "permalink",
 ]
 
 
 def main() -> None:
     raw = json.loads(IN_PATH.read_text())
+    posts = pd.read_csv(POSTS_PATH)[["id", "title"]].rename(
+        columns={"id": "post_id", "title": "post_title"}
+    )
 
     rows = []
     for c in raw:
@@ -26,16 +30,17 @@ def main() -> None:
             "created_utc": c.get("created_utc"),
             "body": c.get("body", ""),
             "score": c.get("score", 0),
-            "link_id": c.get("link_id"),
-            "link_title": c.get("link_title", ""),
+            "post_id": (c.get("link_id") or "").removeprefix("t3_"),
             "parent_id": c.get("parent_id"),
+            "parent_type": (c.get("parent_id") or "").split("_")[0],
             "permalink": c.get("permalink", ""),
         })
 
-    df = pd.DataFrame(rows, columns=COLUMNS).drop_duplicates(subset="id")
+    df = pd.DataFrame(rows).drop_duplicates(subset="id")
     df["date"] = df["created_utc"].apply(
         lambda ts: datetime.fromtimestamp(ts, tz=timezone.utc).date()
     )
+    df = df.merge(posts, on="post_id", how="left")[COLUMNS + ["date"]]
 
     df = df.sort_values("date")
     OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
